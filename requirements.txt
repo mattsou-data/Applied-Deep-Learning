@@ -1,0 +1,12 @@
+pandas
+transformers 
+scikit-learn
+transformers
+torch
+torch.optim 
+sentencepiece
+accelerate
+datasets
+matplotlib
+google-colab
+google-api-python-client
