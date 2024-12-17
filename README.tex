@@ -1,134 +1,163 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
 
-ReadMe
+\renewcommand{\baselinestretch}{1.2}
 
-(The work break down is present in section "II. Work breakdown", the error metric is specified in the part "III. Discussions")
+% Title and Headers
+\title{\textbf{ReadMe}}
+\author{}
+\date{}
 
+\begin{document}
 
-Presentation of the project : 
+\maketitle
 
-The goal of the project is to successfully measure the "sentiment" towards bitcoin and the cryptocurrency ecosystem and use it to identify good 
-zones for selling or buying (tops or bottoms) bitcoin. It will require us to collect data, I chose youtube comments, and to correctly label them as positive 
-or negative. The percentage of positive comments and the number of comments each day will provide us with information for us to create our own 
-indicators.
+\noindent\textbf{(The work breakdown is present in Section \ref{sec:work_breakdown}, and the error metric is specified in Section \ref{sec:discussions}.)}
 
+\section*{Presentation of the Project}
 
-I. Run the project 
+The goal of the project is to successfully measure the ``sentiment'' towards Bitcoin and the cryptocurrency ecosystem and use it to identify good zones for selling or buying (tops or bottoms) Bitcoin. It will require us to collect data, specifically YouTube comments, and correctly label them as positive or negative. The percentage of positive comments and the number of comments each day will provide us with information to create our own indicators.
 
-Part 1 : Setting up the environment 
+\section{Run the Project}
+\subsection*{Part 1: Setting Up the Environment}
+\begin{enumerate}[label=Step \arabic*:]
+    \item Run the Python script, \texttt{setup\_script.py}, in a terminal with the command:
+    \begin{verbatim}
+    python setup_script.py
+    \end{verbatim}
+    It will automatically create a virtual environment called `venv` and install the dependencies inside the \texttt{requirements.txt} file.
+\end{enumerate}
 
-Step 1 : Run the python script, setup_script.py in a terminal with the command 'python setup_script.py'. It will automatically create a virtual
-environnement called 'venv' and install the dependencies inside the 'requirements.txt' file.
+\subsection*{Part 2: Import All the Necessary Datasets}
+\begin{enumerate}[label=Step \arabic*:, start=2]
+    \item Download the daily information about Bitcoin for the last years by running the \texttt{Import\_bitcoin\_data.ipynb} notebook. We use the `yfinance` library, and the data is saved in a CSV file called \texttt{bitcoin\_data.csv}.
+    \item Download all the YouTube comments under the daily videos from the channel \textit{Le Trone Crypto}. Run the notebook \texttt{Pull\_all\_Youtube\_comments.ipynb}. Note that it will require a YouTube API key. It will store:
+    \begin{itemize}
+        \item All video IDs in the file \texttt{video\_ids.csv}.
+        \item All retrieved comments in \texttt{comments\_data/combined\_data.csv}.
+    \end{itemize}
+    \item Download a labeled dataset of French tweets from Kaggle to fine-tune our model. Run the \texttt{Twitter\_extract.ipynb} notebook (a \texttt{kaggle.json} file is required). The data will be saved in \texttt{french\_tweets.csv}.
+\end{enumerate}
 
-Part 2 : Import all the necessary datasets 
+\subsection*{Part 3: Download and Fine-Tune the Model}
+\begin{enumerate}[label=Step \arabic*:, start=5]
+    \item Run the Python script \texttt{Tweets\_sampling.py} to randomly select 10,000 tweets from \texttt{french\_tweets.csv} and save them in \texttt{sampled\_tweets.csv}.
+    \item Use the CamemBERT model from HuggingFace for labeling YouTube comments. Import and fine-tune it using \texttt{Fine-tunning.ipynb}.
+\end{enumerate}
 
-Step 2 : Download the daily information about bitcoin for the last years by running the 'Import_bitcoin_data.ipynb' notebook. We use the 'yfinance' 
-library and the data is saved in a csv file called 'bitcoin_data.csv'.
+\subsection*{Part 4: Label Comments and Create Visualizations}
+\begin{enumerate}[label=Step \arabic*:, start=7]
+    \item Run \texttt{Labeling\_yb\_comments.ipynb}. Note: the process takes around 75 minutes. The labeled data will be saved in \texttt{comments\_data/labeled\_data.csv}.
+    \item Run \texttt{First\_visualisations.ipynb} to analyze the results, find correlations, and build the indicator.
+\end{enumerate}
 
-Step 3 : Download all the youtube comments under all the daily videos from the channel 'Le Trone Crypto'. For that run the notebook 
-'Pull_all_Youtube_comments.ipynb', note that that it will ask you to provide a youtube API key (I share mine with you privately or you can create your own).
-After running the program, it will store all the ids of the videos inside the csv file 'video_ids.csv' (it is useful if you don't want to use 
-API credits too much by retrieving the Ids multiple times). And it will also store all the retrieved comments in the csv file 
-'comments_data/combined_data.csv'.
+\section{Work Breakdown} \label{sec:work_breakdown}
+\begin{itemize}
+    \item \textbf{Collecting Data:}
+    \begin{itemize}
+        \item Choice of data: 10 hours
+        \item YouTube comments (API): 10 hours
+        \item Tweets (Kaggle): 2 hours
+        \item Bitcoin data (Yfinance): 30 minutes
+    \end{itemize}
+    \item \textbf{Model and Training:}
+    \begin{itemize}
+        \item Constructing my own model: 15 hours
+        \item Preparing data: 5 hours
+        \item Importing HuggingFace model: 3 hours
+        \item Training: 12 hours
+    \end{itemize}
+    \item \textbf{Labeling Data and Visualizations:}
+    \begin{itemize}
+        \item Preparing data: 4 hours
+        \item Analyzing results: 8 hours
+    \end{itemize}
+    \item \textbf{Creating the Indicator:} 6 hours
+\end{itemize}
 
-Step 4 : Download a labeled dataset of french tweets from Kaggle to fine-tune our model. We need a french dataset because the youtube comments 
-come from a french channel. I used a twitter dataset instead of a youtube dataset for the fine-tuning because I didn't find any labeled french 
-comments dataset.
-Run the 'Twitter_extract.ipynb' notebook. You will need to provide a kaggle.json file (I share mine with you privately). The data will be saved in
-a csv file 'french_tweets.csv'.
+\section{Discussions} \label{sec:discussions}
 
-Part 3 : Download and fine-tune the model 
+\subsection*{Model and Labeling Quality}
+The error metric is the accuracy of the predicted label compared to manual labeling. I aimed for 90\% accuracy but achieved 86\% using a custom model. Switching to CamemBERT improved the accuracy to 97\% after fine-tuning.
 
-Step 5 : the 'french_tweets.csv' contains around 1.6 million tweets, we don't need that many to fine-tune our model. Therefore, run the python 
-script 'Tweets_sampling.py'. It will randomly select 10000 tweets and save them in the 'sampled_tweets.csv' file. 
+\subsection*{YouTube Comments: Pros and Cons}
+\textbf{Pros:}
+\begin{enumerate}
+    \item Large historical data since 2019.
+    \item Daily videos reflect timely sentiment.
+    \item Consistent format and community.
+\end{enumerate}
 
-Step 6 : We decide to use the camemBERT model (french version of BERT) from HuggingFace to label our youtube comments. We import it and fine-tune
-it by running the 'Fine-tunning.ipynb' notebook. Note that you will have the option for the transformer and the model to either import a new one
-not fine-tuned or to import an already imported and saved version (if the program and the training has already been done).
+\textbf{Cons/Challenges:}
+\begin{enumerate}
+    \item Comment volume grows over time.
+    \item Positive bias due to community behavior.
+    \item Inconsistent posting during vacations.
+\end{enumerate}
 
-Part 4 : Label all the comments and start making visualisations about the data + Creation of the indicators 
+\subsection*{Choice of Twitter Data for Fine-Tuning}
+Tweets and YouTube comments are similar enough for classification tasks, and Twitter datasets are more accessible.
 
-Step 7 : Run the notebook "Labeling_yb_comments.ipynb". The python code that does the labeling lasts ... It will save the labeled data inside the 
-csv file "comments_data/labeled_data.csv". 
+\subsection*{Insights That Helped Create the Indicator}
+\begin{enumerate}
+    \item Most people will lose in the market as it is a zero-sum game. Therefore, the biggest movements will always go against the dominant opinion. The definitive bottoms will be found in periods of fear and disinterest, while the major tops of markets occur when people are euphoric, and many get trapped in the market.
+    \item The number of comments and the percentage of positive comments are necessary and sufficient to build a reliable indicator. One translates the global interest in the market, and the other reflects the sentiment towards it.
+    \item Those sentiments are very volatile and won't be so reliable in the short term (daily analysis). Instead, we should focus on using them to predict trends at a larger time scale (weekly, monthly, or annually).
+\end{enumerate}
 
-Step 8 : Run the notebook "First_visualisations.ipynb". It will extract and arrange the desired information inside the data. We then proceed to
-finding correlations with the evolution of the price. We can then build the indicator.
+\subsection*{Performances of the Indicator}
+If we were to develop a strategy where:
+\begin{itemize}
+    \item Buy when the indicator score is under -25 and the 7-day average is below the 30-day average,
+    \item Sell when the indicator goes over 50 and the 7-day average exceeds the 30-day average,
+\end{itemize}
+we would have:
 
+\subsubsection*{BOUGHT at the PRICES}
+\begin{verbatim}
+2022-08-02    22978.117188
+2022-09-25    18802.097656
+2022-11-12    16799.185547
+2022-12-27    16717.173828
+2022-12-31    16547.496094
+2023-06-06    27238.783203
+2023-10-01    27983.750000
+\end{verbatim}
 
+\subsubsection*{SOLD at the PRICES}
+\begin{verbatim}
+2021-11-14    65466.839844
+2021-11-17    60368.011719
+2023-11-18    36585.703125
+\end{verbatim}
 
-II. Work Break down 
+\noindent We identify that:
+\begin{itemize}
+    \item The indicator perfectly captured the bottom of the market without sending false buy signals at the wrong time.
+    \item The mean entry price is very low, offering a potential 500\% gain with the current Bitcoin price.
+    \item The indicator also perfectly identified the exact top of the market in the previous cycle. However, it gave a false signal of a top in November 2023.
+\end{itemize}
 
--Collecting data : 
-Choice of data and lost time trying to collect other datasets (youtube comment datasets, english datasets, personal dataset) : 10 hours
-Youtube comments (Youtube API): 10 hours
-Tweets (Kaggle): 2 hours
-Bitcoin data (Yfinance): 30 minutes
+\noindent The proposed strategy is very simple and should incorporate other elements, such as price action, before making a financial decision.
 
--Choice of model and training, evaluation of the model 
-Constructing my own model (abandonned) : 15 hours
-Preparing the data : 5 hours
-Importing the model (HuggingFace) : 3 hours
-Training (not active work) : 12 hours  
+\subsubsection*{Limits}
+\begin{itemize}
+    \item The indicator has only one cycle worth of data, and we still need confirmation to verify if it is well-tuned for predictions in the new cycle.
+    \item It can give false signals when the market is going up.
+    \item The results given before the beginning of the year 2020 are unreliable because the number of comments was too low.
+\end{itemize}
+\section*{Further Integration}
+In the future, I aim to integrate the indicator into TradingView and automate daily data collection.
 
--Labeling data, first visualizations 
-Preparing data : 4 hours 
-Working and analysing the results : 8 hours
+\end{document}
 
--Creation of the indicator
-creation of the indicator : 6 hours
-
-
-III. Discussions : 
-
--Discussing the model and the labeling quality 
-
-The error metric in my case was the accuracy level of the predicted label of a comment.
-I wanted to reach very high level of acccuracy of at least 90% compared to human labeling (I would manually verify the quality of the labeling
-by sampling labeled comments)
-
-I spent a lot of time building my own model but the accuracy obtained was not satisfying. I verified manually the results produced and I obtained 
-less than 90% accuracy (I obtained 86% after many repetitions of training and optimization). After somme rounds of trying to optimize the model, I 
-decided to choose a more reliable model as I wanted to create the most reliable indicator as possible. The level of accuracy was very important 
-for the rest of the project.
-
-I used camemBERT from HuggingFace. It is a very large model, very reliable as it is alraeady pre-trained. However it still needs to be fine-tuned.
-The fine-tuning takes a toll on my computer and I only trained it on two epochs (12 hours). I chose a relatively "agressive" learning 
-rate to try and have the most impact with my calculation power. Nonetheless, the results proposed by the fine-tuned and the not fine-tuned model are
-very similar.
-
-The accuracy of the model is very high. I sampled 200 comments labeled by the model, and it had an accuracy of 97% (compared with my labeling).
-However, we have to note that the categories are binary : positive and negative, the model has a bias towards positive results. A message considered
-neutral by a human is nearly always labeled as positive. I took it into account when evaluating the model and that's why the accuracy level is 
-that high.
-
-The percentage of positive labels will be biased towards the positive values.
-
-
--Discussing the choice of the youtube comments (pros and cons)
-
-PROS
-1) I chose this dataset because the youtube "Le Trone Crypto" started making videos already in 2019, therefore there is quite a large historic.
-2) Moreover, he makes daily videos during the week which allows us to have comments that really catch the emotions across time.
-3) The format of the video is always the same, he always analyses the market. The reaction of the people mainly depends on the price action of bitcoin
-that day.
-4) The community is mostly the same for day to day which allows to really catch variations 
-
-CONS / CHALLENGES 
-1) The number of comments vary greatly from cycle to cycle, because the visibility of the channel grows daily. It has to be adjusted for in the 
-creation of the indicator.
-2) The youtuber does a good work and his community is quite respectful and encouraging. Therefore the majority of comments will be positive and
-a lot of them will be adressed to the youtuber for support and won't capture the emotion towards the market. The drops in the number of positive labels 
-will be more revealing than when the percentage of positive labels is high.
-3) The videos are not exactly daily. He doesn't make videos on week-ends and in five years he did take vacations. He generally takes 7 to 10 days vacations
-between two and three a year. At one occurrence he didn't make videos for 21 days. That had to be taken into account and I filled the missing values
-with the average of the 7 previous days.
-
-
--quality on the quality of the data and its challenges (fill the missing days ? growing number of comments ? bias towards the positive values
--- > negative values are more reliable then the positive ones --> justifies the choice of detecting bottoms)
-but also pros (baseline for positivity, nearly daily videos, same content so not too much fluctuations depending on the context)
-
--why twitter data ? 
-
--Discussing the created indicator 
-purpuse, reasons why it was created that way, limits (cycles don't repeat exactly the same, and the instituions are deeply in now, maybe won't drop
-as stronlgy), potential, further integration (trading view ?)
