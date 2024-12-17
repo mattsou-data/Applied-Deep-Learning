@@ -8,5 +8,5 @@ sentencepiece
 accelerate
 datasets
 matplotlib
-google-colab
 google-api-python-client
+yfinance
