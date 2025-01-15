@@ -1,0 +1,62 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  schedule:
+    - cron: '0 10 * * *'  # Runs daily at 6 AM UTC
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      
+      - name: Setup the environnement 
+        run: |
+          python setup_script.py
+      
+      - name: Download the comments of the video two days ago 
+        run: |
+          python Script1.py
+      
+      - name: Download csv
+        run: |
+          pip install gdown
+          gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O summurize_comments.csv
+
+      - name: Download fine-tuned Camembert model
+        run: |
+          pip install gdown
+          gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O fine_tuned_camembert
+
+      - name: Download csv
+        run: |
+          pip install gdown
+          gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O summurize_comments.csv
+
+      - name: Puts labels to comments and completes csv file with Date, Nbr_comments, Percent_positive
+        run: |
+          python Script2.py
+
+      - name: Download the udpdated csv file
+        run: |
+          pip install gdown
+          gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O summurize_comments.csv
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add comments.csv
+          git commit -m "Update comments.csv"
+          git push
