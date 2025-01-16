@@ -1,47 +1,67 @@
-name: CI
+name: Deploy Interactive Plot
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   schedule:
     - cron: '0 10 * * *'  # Runs daily at 6 AM UTC
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  deploy:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      
-      - name: Setup the environnement 
-        run: |
-          python setup_script.py
-      
-      - name: Download the comments of the video two days ago 
-        run: |
-          python Script1.py
+    - name: Check out repository
+      uses: actions/checkout@v4
 
-      - name: Download fine-tuned Camembert model
-        run: |
-          pip install gdown
-          gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O fine_tuned_camembert
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9  # Use appropriate Python version
 
-      - name: Puts labels to comments and completes csv file with Date, Nbr_comments, Percent_positive
-        run: |
-          python Script2.py
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add summary_comments.csv
-          git commit -m "Updated summary_comments.csv"
-          git push
+    - name: Set up API key
+      env:
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      run: echo "API Key set."
+
+    - name: Run Script1 to fetch YouTube comments
+      run: |
+        source venv/bin/activate
+        python Script1.py
+
+    - name: Download fine-tuned Camembert model
+      run: |
+        pip install gdown
+        gdown "https://drive.google.com/drive/folders/1KgSUlobzqJRZ_ZWRx31wuNM0_8ZgZGEJ" -O fine_tuned_camembert
+
+    - name: Run Script2 for sentiment analysis
+      run: |
+        source venv/bin/activate
+        python Script2.py
+
+    - name: Create interactive plot
+      run: |
+        source venv/bin/activate
+        python Script3.py
+
+    - name: Commit and push updated CSV
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add summary_comments.csv
+        git commit -m "Update summary_comments.csv"
+        git push
+
+    - name: Deploy Streamlit app
+      uses: streamlit/action-deploy@v1
+      with:
+        token: ${{ secrets.STREAMLIT_TOKEN }}
+        path: .  # Root directory of the app
