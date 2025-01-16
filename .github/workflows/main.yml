@@ -1,0 +1,54 @@
+name: Deploy Interactive Plot
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # Runs daily at 10 AM UTC
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12  # Use appropriate Python version
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Script1 to fetch YouTube comments
+      env:
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      run: |
+        source venv/bin/activate
+        python Script1.py
+
+    - name: Download fine-tuned Camembert model
+      run: |
+        source venv/bin/activate
+        python Download_model.py
+
+    - name: Run Script2 for sentiment analysis
+      run: |
+        source venv/bin/activate
+        python Script2.py
+
+    - name: Commit and push updated CSV
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add summary_comments.csv
+        git commit -m "Update summary_comments.csv"
+        git push
+
