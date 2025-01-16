@@ -10,3 +10,6 @@ datasets
 matplotlib
 google-api-python-client
 yfinance
+isodate
+streamlit
+plotly
