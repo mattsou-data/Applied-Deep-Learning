@@ -45,11 +45,6 @@ jobs:
         source venv/bin/activate
         python Script2.py
 
-    - name: Create interactive plot
-      run: |
-        source venv/bin/activate
-        python Script3.py
-
     - name: Commit and push updated CSV
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,6 +54,13 @@ jobs:
         git add summary_comments.csv
         git commit -m "Update summary_comments.csv"
         git push
+
+    - name: Create interactive plot
+      run: |
+        source venv/bin/activate
+        python Script3.py
+
+    
 
     - name: Deploy Streamlit app
       uses: streamlit/action-deploy@v1
