@@ -37,6 +37,11 @@ jobs:
         source venv/bin/activate
         python Download_model.py
 
+    - name: Verify extracted files
+      run: |
+        ls -R  # Lists all directories and files in the current directory
+        ls fine_tuned_camembert  # Verifies the specific folder content
+    
     - name: Run Script2 for sentiment analysis
       run: |
         source venv/bin/activate
