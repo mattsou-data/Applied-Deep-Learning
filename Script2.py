@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import re
 import pandas as pd
 import torch
@@ -16,7 +16,7 @@ df_comments = pd.read_csv('comments.csv')
 
 
 df_summary = pd.read_csv('summary_comments.csv') 
-#Columns are Date, Number_comments, Percent_labels
+#Columns are Date, Number_comments, Number_labels
 
 # Check if the DataFrame is empty
 if df_comments.empty:
@@ -28,7 +28,13 @@ if df_comments.empty:
 
     # Calculate the new row
     last_date = df_summary['Date'].iloc[-1]
+    # Convert last_date to a datetime object
+    last_date = datetime.strptime(last_date, '%Y-%m-%d')
     new_date = last_date + timedelta(days=1)
+    # Calculate the time 5 hours ago
+    
+    # new_date = (last_date + timedelta(days=1)).isoformat()  + 'Z'
+    
 
     # Calculate the average of the last 7 rows for 'Number of Comments' and 'Percentage of Positive Labels'
     avg_comments = df_summary['Number_comments'].tail(7).mean()
@@ -97,6 +103,8 @@ else:
 
     # Calculate the new row
     last_date = df_summary['Date'].iloc[-1]
+    # Convert last_date to a datetime object
+    last_date = datetime.strptime(last_date, '%Y-%m-%d')
     new_date = last_date + timedelta(days=1)
 
     new_row = pd.DataFrame({
