@@ -6,7 +6,7 @@ from transformers import CamembertTokenizer, CamembertForSequenceClassification
 
 
 # Relative path to the model folder in the GitHub Actions environment
-save_path = 'fine_tuned_camembert'
+save_path = './fine_tuned_camembert/fine_tuned_camembert'
 
 tokenizer = CamembertTokenizer.from_pretrained(save_path)
 model = CamembertForSequenceClassification.from_pretrained(save_path)
