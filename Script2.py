@@ -26,14 +26,16 @@ if df_comments.empty:
     # Ensure the DataFrame is sorted by date
     df_summary = df_summary.sort_values(by='Date')
 
-    # Calculate the new row
     last_date = df_summary['Date'].iloc[-1]
-    # Convert last_date to a datetime object
-    last_date = datetime.strptime(last_date, '%Y-%m-%d')
+
+    # Handle time in the string
+    last_date = datetime.strptime(last_date.split()[0], '%Y-%m-%d')
+
+    # Add one day
     new_date = last_date + timedelta(days=1)
-    # Calculate the time 5 hours ago
-    
-    # new_date = (last_date + timedelta(days=1)).isoformat()  + 'Z'
+
+    # Convert the new date back to string in 'YYYY-MM-DD' format
+    new_date = new_date.strftime('%Y-%m-%d')
     
 
     # Calculate the average of the last 7 rows for 'Number of Comments' and 'Percentage of Positive Labels'
@@ -101,11 +103,16 @@ else:
 
     df_comments['label'] = all_predictions
 
-    # Calculate the new row
     last_date = df_summary['Date'].iloc[-1]
-    # Convert last_date to a datetime object
-    last_date = datetime.strptime(last_date, '%Y-%m-%d')
+
+    # Handle time in the string
+    last_date = datetime.strptime(last_date.split()[0], '%Y-%m-%d')
+
+    # Add one day
     new_date = last_date + timedelta(days=1)
+
+    # Convert the new date back to string in 'YYYY-MM-DD' format
+    new_date = new_date.strftime('%Y-%m-%d')
 
     new_row = pd.DataFrame({
         'Date':[new_date],
