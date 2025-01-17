@@ -132,7 +132,7 @@ if len(videos) != 0:
 
     # List to hold all comments from all videos
     all_comments = []
-    video_comments = get_comments_for_video(youtube, videos[0])
+    video_comments = get_comments_for_video(youtube, videos[-1])
     all_comments.extend(video_comments)
 
     # Create DataFrame
