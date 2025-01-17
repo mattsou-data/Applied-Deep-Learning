@@ -17,7 +17,7 @@ def get_videos_last_5_hours(channel_id):
     
 
     # Calculate the time 5 hours ago
-    time_5_hours_ago = (datetime.utcnow() - timedelta(days=2) - timedelta(hours=5)).isoformat() + 'Z'
+    time_5_hours_ago = (datetime.utcnow() - timedelta(days=2) - timedelta(hours=8)).isoformat() + 'Z'
     current_time = (datetime.utcnow()- timedelta(days=2)).isoformat()  + 'Z'
 
     # Use the search endpoint to get videos published in the last 5 hours
