@@ -58,7 +58,7 @@ def convert_duration_to_seconds(duration):
 
 
 # Example usage
-videos = get_videos_last_5_hours(API_KEY, CHANNEL_ID)
+videos = get_videos_last_5_hours(CHANNEL_ID)
 print("Videos released in the last 5 hours (excluding Shorts): {}".format(videos))
 
 def get_replies(youtube, parent_id, video_id):  
