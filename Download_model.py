@@ -27,7 +27,7 @@ try:
     download_large_file(file_id, destination)
 
     # Step 2: Unzip the downloaded file
-    extract_to = "fine_tuned_camembert2"  # Directory where the contents will be extracted
+    extract_to = "fine_tuned_camembert"  # Directory where the contents will be extracted
     
     unzip_file(destination, extract_to) 
 except Exception as e:
